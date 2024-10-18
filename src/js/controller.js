@@ -2,7 +2,9 @@ import * as model from './model.js';
 import recipeView from './views/recipeView.js';
 import searchView from './views/searchView.js';
 import resultsView from './views/resultsView.js';
+import bookmarksView from './views/bookmarksView.js';
 import paginationView from './views/paginationView.js';
+import addRecipeView from './views/addRecipeView.js';
 
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
@@ -20,6 +22,11 @@ const controlRecipes = async function () {
 
     if (!id) return;
     recipeView.renderSpinner(recipeContainer);
+
+    // Update results highlighting selected
+    // We could use render but then everything reloads and flickers
+    resultsView.update(model.getSearchResultsPage());
+    bookmarksView.update(model.state.bookmarks);
 
     // Loading Recipe
     await model.loadRecipe(id);
@@ -66,10 +73,43 @@ const controlServings = function (newServing) {
   recipeView.update(model.state.recipe);
 };
 
+const controlAddBookmark = function () {
+  // Add or remove bookmark
+  if (!model.state.recipe.bookmarked) model.addBookmark(model.state.recipe);
+  else model.deleteBookmark(model.state.recipe.id);
+
+  // console.log(model.state.recipe);
+  // console.log(model.state);
+
+  // Update recipe view with bookmark button
+  recipeView.update(model.state.recipe);
+
+  // Render bookmarks
+  bookmarksView.render(model.state.bookmarks);
+};
+
+const controlRenderBookmarks = function () {
+  bookmarksView.render(model.state.bookmarks);
+};
+
+const controlAddRecipe = function (newRecipe) {
+  try {
+    model.uploadRecipe(newRecipe);
+  } catch (err) {
+    console.error(err);
+    addRecipeView.renderError(err.message);
+  }
+
+  // console.log(newRecipe);
+};
+
 const init = function () {
+  bookmarksView.addHandlerRender(controlRenderBookmarks);
   recipeView.addHandlerRender(controlRecipes);
   recipeView.addHandlerChangeServings(controlServings);
+  recipeView.addHandlerAddBookmark(controlAddBookmark);
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controlPagination);
+  addRecipeView.addHandlerUpload(controlAddRecipe);
 };
 init();
