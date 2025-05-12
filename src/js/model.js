@@ -1,7 +1,6 @@
 import { async } from 'regenerator-runtime';
-import { API_URL, RES_PER_PAGE, API_KEY } from './config.js';
-import { AJAX } from './helpers.js';
 import { RES_PER_PAGE } from './config.js';
+import { AJAX } from './helpers.js';
 
 export const state = {
   recipe: {},
@@ -31,7 +30,9 @@ const createRecipeObject = function (data) {
 
 export const loadRecipe = async function (id) {
   try {
-    const data = await AJAX(`${API_URL}/${id}?key=${API_KEY}`);
+    const data = await AJAX(
+      `${process.env.API_URL}/${id}?key=${process.env.API_KEY}`
+    );
     state.recipe = createRecipeObject(data);
 
     // const { recipe } = data.data;
@@ -59,7 +60,9 @@ export const loadRecipe = async function (id) {
 export const loadSearchResults = async function (query) {
   try {
     state.search.query = query;
-    const data = await AJAX(`${API_URL}?search=${query}&key=${API_KEY}`);
+    const data = await AJAX(
+      `${process.env.API_URL}?search=${query}&key=${process.env.API_KEY}`
+    );
     // console.log(data);
 
     state.search.results = data.data.recipes.map(rec => {
@@ -151,7 +154,10 @@ export const uploadRecipe = async function (newRecipe) {
       ingredients,
     };
 
-    const data = await AJAX(`${API_URL}?key=${API_KEY}`, recipe);
+    const data = await AJAX(
+      `${process.env.API_URL}?key=${process.env.API_KEY}`,
+      recipe
+    );
     console.log(data.data.recipe.id);
     // This was my way. In this case the createRecipeObject function isn't needed
     await loadRecipe(data.data.recipe.id);
