@@ -6,6 +6,12 @@ A modern, fast recipe application that lets you search over 1,000,000 recipes, v
 
 ---
 
+## 🚀 Demo
+
+👉 [Visit the Forkify App Website](https://forkify-app-peach.vercel.app/)
+
+---
+
 ## ✨ Features
 
 - Search over a million recipes via the Forkify API
